@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="免費線上影片下載工具，純前端架構支援多種平台。">
+    <title>VidGrab - 影片擷取下載器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <header class="header">
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="10" fill="url(#logoGrad)"/>
+                <path d="M16 12L28 20L16 28V12Z" fill="white"/>
+                <path d="M12 26L12 30L20 30" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                    <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                        <stop offset="0%" stop-color="#6C63FF"/>
+                        <stop offset="100%" stop-color="#E040FB"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="logo-text">VidGrab</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                無廣告 · 純前端架構 · 速度極快
+            </div>
+            <h1 class="hero-title">貼上網址，<span class="gradient-text">立即下載</span></h1>
+            
+            <div class="glass-card settings-card" style="max-width: 640px; margin: 0 auto 24px; padding: 24px; text-align: left;">
+                <div class="input-wrapper" style="margin-bottom: 20px;">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <input type="url" id="urlInput" class="url-input" placeholder="在此貼上影片網址..." autocomplete="off">
+                </div>
+
+                <div class="options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="option-group">
+                        <label style="display:block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">下載格式</label>
+                        <select id="formatSelect" class="url-input" style="padding-left: 16px;">
+                            <option value="auto">影片 + 聲音</option>
+                            <option value="audio">純聲音 (MP3)</option>
+                        </select>
+                    </div>
+                    <div class="option-group" id="qualityGroup">
+                        <label style="display:block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">影片畫質</label>
+                        <select id="qualitySelect" class="url-input" style="padding-left: 16px;">
+                            <option value="max">最高畫質 (可能很大)</option>
+                            <option value="1080" selected>1080p</option>
+                            <option value="720">720p</option>
+                            <option value="480">480p</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button id="downloadBtn" class="parse-btn" style="width: 100%; justify-content: center;">
+                        <span class="btn-text">解析並下載</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display:none; margin-top: 16px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="downloadOverlay" class="download-overlay" style="display:none;">
+        <div class="download-modal glass-card">
+            <div class="loader" style="margin: 0 auto 20px;">
+                <div class="loader-ring"></div>
+            </div>
+            <h3 class="download-title">正在與伺服器連線...</h3>
+            <p class="download-subtitle" id="downloadStatus">這可能需要幾秒鐘的時間，請稍候</p>
+        </div>
+    </div>
+
+    <script src="app.js?v=2"></script>
+</body>
+</html>
