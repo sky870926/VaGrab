@@ -38,7 +38,7 @@ app.get('/api/download', (req, res) => {
     }
 
     // First, let's get the title and safe filename using yt-dlp --print
-    const infoArgs = ['--print', '%(title)s', url];
+    const infoArgs = ['--print', '%(title)s', '--no-warnings', '--extractor-args', 'youtube:player_client=android,web', url];
     const infoProcess = spawn('yt-dlp', infoArgs);
     
     let title = 'video';
@@ -57,7 +57,9 @@ app.get('/api/download', (req, res) => {
 
         let args = [
             '-f', formatArg,
-            '-o', outTemplate
+            '-o', outTemplate,
+            '--no-warnings',
+            '--extractor-args', 'youtube:player_client=android,web'
         ];
 
         if (type === 'audio') {
