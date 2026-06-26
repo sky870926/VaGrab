@@ -48,16 +48,16 @@ app.get('/api/download', (req, res) => {
     });
 
     infoProcess.on('close', () => {
-        // Now stream the actual download
         const safeTitle = title.replace(/[^\w\s-]/gi, '_');
         const filename = `${safeTitle}.${ext}`;
-
-        // Set headers for download
-        res.header('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
         
+        // Generate a unique temporary filepath
+        const tmpId = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const outTemplate = path.join(require('os').tmpdir(), `vidgrab-${tmpId}.%(ext)s`);
+
         let args = [
             '-f', formatArg,
-            '-o', '-' // Output to stdout
+            '-o', outTemplate
         ];
 
         if (type === 'audio') {
@@ -69,19 +69,43 @@ app.get('/api/download', (req, res) => {
         args.push(url);
 
         const downloadProcess = spawn('yt-dlp', args);
-
-        downloadProcess.stdout.pipe(res);
-
         let errorLog = '';
+
         downloadProcess.stderr.on('data', (data) => {
             errorLog += data.toString();
             console.error(`[yt-dlp stderr]: ${data}`);
         });
 
         downloadProcess.on('close', (code) => {
-            if (code !== 0 && !res.headersSent) {
+            if (code !== 0) {
                 console.error('yt-dlp failed with code', code);
-                res.status(500).json({ error: '下載失敗', details: errorLog });
+                if (!res.headersSent) {
+                    return res.status(500).json({ error: '下載失敗', details: errorLog });
+                }
+            } else {
+                // Find the downloaded file
+                const fs = require('fs');
+                const glob = require('path');
+                const tmpDir = require('os').tmpdir();
+                
+                // Read dir to find the file that starts with our tmpId
+                const files = fs.readdirSync(tmpDir);
+                const downloadedFile = files.find(f => f.startsWith(`vidgrab-${tmpId}.`));
+                
+                if (downloadedFile) {
+                    const filePath = path.join(tmpDir, downloadedFile);
+                    res.download(filePath, filename, (err) => {
+                        // Delete the file after download finishes
+                        fs.unlink(filePath, () => {});
+                        if (err) {
+                            console.error('Error sending file:', err);
+                        }
+                    });
+                } else {
+                    if (!res.headersSent) {
+                        res.status(500).json({ error: '找不到下載的檔案' });
+                    }
+                }
             }
         });
 
